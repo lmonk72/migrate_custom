@@ -1,0 +1,58 @@
+langcode: en
+status: true
+dependencies: {  }
+id: import_files
+migration_tags: null
+migration_group: custom
+label: 'Import Files'
+source:
+  plugin: csv
+  path: 'private://import_csv/itefiles.csv'
+  header_row_count: 1
+  keys:
+    - fid
+  ids:
+    - fid
+
+  column_names:  #fid, uid, filename, filepath, uri, filemime, filesize, status, timestamp, uuid, alt 
+    0:
+      fid: 'fid'
+    1:
+      uid: 'uid'
+    2:
+      filename: 'filename'
+    3:
+      filepath: 'filepath'
+    4:
+      uri: 'uri'
+    5:
+      filemime: 'filemime'
+    6:
+      filesize: 'filesize'
+    7:
+      status: 'status'
+    8:
+      timestamp: 'timestamp'
+    9:
+      uuid: 'uuid'
+
+process:
+  filename: filename
+  fid: fid
+  uid: uid
+  created: timestamp
+  changed: timestamp
+  status: status
+  uri: 
+    plugin: file_copy
+    source: 
+      - filepath
+      - uri
+    file_exists: rename
+    move: false
+destination:
+  plugin: entity:file
+  source_path_property: filepath
+  destination_path_property: uri
+template: null
+migration_dependencies: null

@@ -1,0 +1,72 @@
+id: custom_user
+label: Custom user migration
+migration_group: custom
+ 
+# define a forced module dependency. this will cause the migration definition to be reloaded
+# when you uninstall and reinstall your custom module.
+dependencies:
+  enforced:
+    module:
+      - migrate_custom
+
+source:
+  plugin: custom_user
+  # The "target" here refers to the database connection where the source data lives.
+  # You will need to configure this database in your settings.php.
+  target: db_migration
+
+destination:
+  plugin: entity:user
+
+process:
+  uid: uid
+  name: name
+  pass: pass
+  mail: mail
+  status: status
+  created: created
+  changed: changed
+  access: access
+  login: login
+  timezone: timezone
+  langcode:
+    plugin: default_value
+    source: language
+    default_value: en
+  preferred_langcode:
+    plugin: default_value
+    source: language
+    default_value: en
+  preferred_admin_langcode:
+    plugin: default_value
+    source: language
+    default_value: en
+  init: init
+  #Custom fields imported through SQL queries in User.php
+  field_member_first_name: user_first_name
+  field_member_last_name: user_last_name
+  field_member_job_title: job_title
+  field_member_contact_number: contact_number
+  field_member_company_name: company_name
+  field_member_company_type: company_type
+  field_member_company_size: company_size
+  field_member_country:
+    plugin: default_value
+    source: country_key
+    default: country_key
+
+  field_member_news_mailing_list: news_mailing_list
+  field_member_events_mailing_list: event_mailing_list
+  field_member_vendor_mailing_list: vendor_mailing_list
+  field_member_intel_mailing_list: market_intelligence_mailing_list
+  field_member_wp_mailing_list: vendor_mailing_list
+
+
+  roles:
+    plugin: migration
+    source: roles
+    migration: upgrade_d7_user_role
+
+  migration_dependencies:
+    required:
+      - upgrade_d7_user_role

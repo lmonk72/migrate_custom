@@ -1,0 +1,70 @@
+langcode: en
+status: true
+dependencies: {  }
+id: import_media_files
+migration_tags: null
+migration_group: custom
+label: 'Import Media Files'
+source:
+  plugin: csv
+  path: 'private://import_csv/itefiles.csv'
+  header_row_count: 1
+  keys:
+    - fid
+  ids:
+    - fid
+
+  column_names:  #fid, uid, filename, filepath, uri, filemime, filesize, status, timestamp, uuid, alt 
+    0:
+      fid: 'fid'
+    1:
+      uid: 'uid'
+    2:
+      filename: 'filename'
+    3:
+      filepath: 'filepath'
+    4:
+      uri: 'uri'
+    5:
+      filemime: 'filemime'
+    6:
+      filesize: 'filesize'
+    7:
+      status: 'status'
+    8:
+      timestamp: 'timestamp'
+    9:
+      uuid: 'uuid'
+
+process:
+  name: filename
+  field_media_image/target_id:
+    plugin: migration_lookup
+    migration: import_files
+    source: fid
+  field_media_image/alt:
+    plugin: default_value
+    default_value: 'Featured image'
+
+  thumbnail/target_id:
+    plugin: migration_lookup
+    migration: images_example
+    source: fid
+  uid: uid
+  created: timestamp
+  changed: timestamp
+  status: status
+  uri: 
+    plugin: file_copy
+    source: 
+      - filepath
+      - uri
+destination:
+  plugin: entity:media
+  default_bundle: image
+  source_path_property: filepath
+  destination_path_property: uri
+template: null
+migration_dependencies: 
+  required:
+    - import_files

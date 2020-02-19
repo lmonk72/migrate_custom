@@ -1,0 +1,85 @@
+id: news_nodes
+label: Custom News Nodes
+migration_group: custom
+
+dependencies:
+  enforced:
+    module:
+      - migrate_custom
+
+source:
+  plugin: news_nodes
+  node_type: article
+  target: db_migration
+
+destination:
+  plugin: entity:node
+  default_bundle: article
+
+process:
+  nid: nid
+  vid: vid
+  uid:
+    plugin: default_value
+    default_value: 1
+  langcode:
+    plugin: default_value
+    source: language
+    default_value: en
+  title: title
+  uid: node_uid
+  status: status
+  created: created
+  changed: changed
+  promote: promote
+  sticky: sticky
+  revision_uid: revision_uid
+  revision_log: log
+  revision_timestamp: timestamp
+  body/format:
+    plugin: static_map
+    bypass: true
+    source: body_format
+    map:
+      1: plain_text
+      2: restricted_html
+      3: full_html
+      4: full_html
+  body/value: body_value
+  body/summary: body_summary
+  field_tags: tags
+
+  field_image: image
+  field_image: 
+    -
+      plugin: migration_lookup
+      migration: import_files
+      source: filename
+    -
+      plugin: skip_on_empty
+      method: process
+
+  field_media_image:
+      plugin: sub_process
+      source: field_media_image
+      keys: fid #references the fid field in the import media file
+      process: 
+        target_id:
+          plugin: migration_lookup
+          migration: import_media_files
+          source: fid 
+          no_stub: true
+
+  field_news_companies: company_tags
+  field_news_companies:
+    plugin: sub_process
+    source: field_company_companies
+    process:
+      target_id: tid
+migration_dependencies:
+  required:
+    - custom_user
+    - import_files
+    - import_media_files
+    - upgrade_d7_taxonomy_term_company_companies
+    - upgrade_d7_taxonomy_term_tags
